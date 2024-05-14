@@ -1,6 +1,6 @@
 class Load:
     """
-    The Load class provides a static method for loading air ticket data from a file.
+    Class of loading information.
     """
     data = []
 
@@ -14,21 +14,12 @@ class Load:
         with open(file_name, 'r', encoding='UTF-8') as f:
             for line in [line.rstrip() for line in f.readlines()][1:]:
                 passenger_name, _from, to, data_time, flight, seat, _class, gate, empty = line.split(';')
-                Load.data.append(AirTicket(
-                    passenger_name,
-                    _from,
-                    to,
-                    data_time,
-                    flight,
-                    seat,
-                    _class,
-                    gate
-                ))
+                Load.data.append(AirTicket(passenger_name, _from, to, data_time, flight, seat, _class, gate))
 
 
 class AirTicket:
     """
-    The AirTicket class represents an air ticket with various attributes.
+    Class of AirTickets
     """
     def __init__(self, passenger_name, _from, to, data_time, flight, seat, _class, gate):
         """

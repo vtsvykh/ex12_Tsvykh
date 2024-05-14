@@ -1,9 +1,19 @@
 import datetime
 
 class Meeting:
+    """
+    Class of meetings.
+    """
     lst_meeting = []
 
     def __init__(self, id, date, title):
+        """
+        Initializes a Meeting object.
+
+        :param id: the meeting's ID.
+        :param date: the date of the meeting.
+        :param title: the title of the meeting.
+        """
         self.id = id
         self.date = date
         self.title = title
@@ -13,7 +23,7 @@ class Meeting:
     def count_meeting(cls, date):
         counter = 0
         for meet in Meeting.lst_meeting:
-            if meet.date == date:
+            if str(meet.date) == str(date):
                 counter += 1
         return counter
 
@@ -32,9 +42,8 @@ class Meeting:
 
     def __repr__(self):
         res = ''
-        date_str = self.date.strftime('%d %b %Y')
         res += f'Рабочая встреча {Meeting.lst_meeting.index(self) + 1}\n'
-        res += f'{date_str} {self.title}\n'
+        res += f'{self.date} {self.title}\n'
 
         for employee in self.employees:
             employee_str = (f'ID: {employee.id} '
@@ -42,8 +51,7 @@ class Meeting:
                             f'NAME: {employee.first_name} {employee.middle_name} {employee.last_name} '
                             f'GENDER: {employee.gender}')
             employee_str = ' '.join(employee_str.split())
-            employee_str += '\n'
-            res += employee_str
+            res = res + employee_str + '\n'
         return res
 
 
@@ -60,17 +68,23 @@ class Load:
         """
 
         with open(file_meeting, 'r', encoding='utf_8') as file_meeting:
-            for line in [line.rstrip() for line in file_meeting.readlines()][1:]:
+            lines = file_meeting.readlines()
+            for line in lines[1:]:
+                line = line.rstrip()
                 id, date, title = line.split(';')[:-1]
                 Meeting.lst_meeting.append(Meeting(int(id), Date(date), title))
 
-        with open(file_person, 'r', encoding='UTF-8') as f:
-            for line in [line.rstrip() for line in f.readlines()][1:]:
+        with open(file_person, 'r', encoding='UTF-8') as file_person:
+            lines = file_person.readlines()
+            for line in lines[1:]:
+                line = line.rstrip()
                 id, nick_name, first_name, last_name, middle_name, gender = line.split(';')[:-1]
                 User.users.append(User(int(id), nick_name, first_name, last_name, middle_name, gender))
 
-        with open(file_meet_pers, 'r', encoding='UTF-8') as f:
-            for line in [line.rstrip() for line in f.readlines()][1:]:
+        with open(file_meet_pers, 'r', encoding='UTF-8') as file_meet_pers:
+            lines = file_meet_pers.readlines()
+            for line in lines[1:]:
+                line = line.rstrip()
                 id_meet, id_pers = line.split(';')[:-1]
                 for meet in Meeting.lst_meeting:
                     if meet.id == int(id_meet):
@@ -84,22 +98,50 @@ class Date:
     Class representing date
     """
 
-    def __init__(self, date):
+    def __init__(self, date_str):
         """
-        Sets all the necessary attributes for the class Date
-        :param date: string of data of the class Date
-        """
+        Class of date.
 
-        self.date = datetime.datetime.strptime(date, '%d.%m.%Y')
+        :param date_str: A string representing a date in the format "dd.mm.yyyy".
+        """
+        try:
+            self.__date = datetime.datetime.strptime(date_str, '%d.%m.%Y').date()
+        except ValueError:
+            print('Ошибка')
+            self.__date = None
+
+    @property
+    def date(self):
+        """
+        Function for getting date.
+        :return: date
+        """
+        month_names = ["янв", "фев", "мар", "апр", "май", "июн", "июл", "авг", "сен", "окт", "ноя", "дек"]
+        if self.__date:
+            return f'{self.__date.day} {month_names[self.__date.month - 1]} {self.__date.year} г.'
+        return None
+
+    @date.setter
+    def date(self, value):
+        """
+        Function for setting date.
+        :param value: value of new date
+        :return: new_date
+        """
+        try:
+            self.__date = datetime.datetime.strptime(value, '%d.%m.%Y').date()
+        except ValueError:
+            print('Ошибка')
+            self.__date = None
 
     def __repr__(self):
         """
-        Method of representing data of class Date
-        :return:
+        Returns a string representation of the date.
+
+        :return: A string representing the date.
         """
 
-        return self.date
-
+        return f'{self.date}'
 
 class User:
     users = []
@@ -107,25 +149,17 @@ class User:
     Class representing User
     """
 
-    def __init__(
-            self,
-            id: int,
-            nick_name: str,
-            first_name: str,
-            last_name: str,
-            middle_name: str,
-            gender: str,
-    ):
+    def __init__(self, id, nick_name, first_name, last_name, middle_name, gender):
         """
-             Initializes a User object.
+         Initializes a User object.
 
-             :param id: The user's ID.
-             :param nick_name: The user's nickname.
-             :param first_name: The user's first name.
-             :param last_name: The user's last name.
-             :param middle_name: The user's middle name.
-             :param gender: The user's gender.
-             """
+         :param id (int): the user's ID.
+         :param nick_name (str): the user's nickname.
+         :param first_name (str): the user's first name.
+         :param last_name (str): the user's last name.
+         :param middle_name (str): the user's middle name.
+         :param gender (str): the user's gender.
+         """
         self.id = id
         self.nick_name = nick_name
         self.first_name = first_name
